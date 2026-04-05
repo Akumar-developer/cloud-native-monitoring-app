@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="refresh" content="5" />
+  <title>System Monitor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #7dd3fc;
+      letter-spacing: 0.05em;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 0.4rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #1e2330;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+    }
+
+    .stat-primary {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-sub {
+      font-size: 0.82rem;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .progress-bar {
+      background: #2d3748;
+      border-radius: 99px;
+      height: 8px;
+      margin: 1rem 0 0.5rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .cpu-color    { color: #7dd3fc; }
+    .mem-color    { color: #86efac; }
+    .disk-color   { color: #fbbf24; }
+
+    .cpu-fill  { background: #7dd3fc; }
+    .mem-fill  { background: #86efac; }
+    .disk-fill { background: #fbbf24; }
+
+    .warning { color: #f87171 !important; }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      color: #334155;
+    }
+
+    footer a { color: #475569; text-decoration: none; }
+    footer a:hover { color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚙ System Monitor</h1>
+  <p>Auto-refreshes every 5 seconds &nbsp;·&nbsp; <a href="/api/metrics">JSON API</a> &nbsp;·&nbsp; <a href="/metrics">Prometheus</a></p>
+</header>
+
+<div class="grid">
+
+  <!-- CPU -->
+  <div class="card">
+    <h2>CPU Usage</h2>
+    <div class="stat-primary cpu-color {% if metrics.cpu.usage_percent > 80 %}warning{% endif %}">
+      {{ metrics.cpu.usage_percent }}%
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill cpu-fill" style="width: {{ metrics.cpu.usage_percent }}%"></div>
+    </div>
+    <div class="stat-sub">
+      Physical cores: {{ metrics.cpu.core_count }}<br/>
+      Logical cores: {{ metrics.cpu.logical_count }}
+    </div>
+  </div>
+
+  <!-- Memory -->
+  <div class="card">
+    <h2>Memory Usage</h2>
+    <div class="stat-primary mem-color {% if metrics.memory.usage_percent > 80 %}warning{% endif %}">
+      {{ metrics.memory.usage_percent }}%
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill mem-fill" style="width: {{ metrics.memory.usage_percent | default(0)}}%"></div>
+    </div>
+    <div class="stat-sub">
+      Used: {{ metrics.memory.used_gb }} GB<br/>
+      Available: {{ metrics.memory.available_gb }} GB<br/>
+      Total: {{ metrics.memory.total_gb }} GB
+    </div>
+  </div>
+
+  <!-- Disk -->
+  <div class="card">
+    <h2>Disk Usage</h2>
+    <div class="stat-primary disk-color {% if metrics.disk.usage_percent > 80 %}warning{% endif %}">
+      {{ metrics.disk.usage_percent }}%
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill disk-fill" style="width: { metrics.disk.usage_percent }"></div>
+    </div>
+    <div class="stat-sub">
+      Used: {{ metrics.disk.used_gb }} GB<br/>
+      Free: {{ metrics.disk.free_gb }} GB<br/>
+      Total: {{ metrics.disk.total_gb }} GB
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>/health &nbsp;·&nbsp; /ready &nbsp;·&nbsp; /api/metrics &nbsp;·&nbsp; /metrics</p>
+</footer>
+
+</body>
+</html>
