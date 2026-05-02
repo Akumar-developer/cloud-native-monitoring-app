@@ -20,8 +20,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker Image Build
-        uses: docker build -t ${{ secrets.DOCKER_USERNAME }}/cloud-native-monitoring:latest .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/cloud-native-monitoring:latest .
 
       - name: Docker Push Image
-        uses: docker push ${{ secrets.DOCKER_USERNAME }}/cloud-native-monitoring:latest
-      
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/cloud-native-monitoring:latest
